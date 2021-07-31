@@ -9,6 +9,11 @@ namespace ConsoleApplication
 
     public class RandomNumberGenerator : IRandomNumberGenerator
     {
-        public int Number { get; set; } = new Random().Next(0, 100);
+        public int Number { get; set; }
+
+        public RandomNumberGenerator(IGenerator generator)
+        {
+            Number = generator.Generate();
+        }
     }
 }

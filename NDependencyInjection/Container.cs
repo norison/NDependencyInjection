@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace NDependencyInjection
 {
@@ -14,7 +16,12 @@ namespace NDependencyInjection
 
         public T Resolve<T>()
         {
-            var typeName = typeof(T).Name;
+            return (T)Resolve(typeof(T));
+        }
+
+        private object Resolve(Type serviceType)
+        {
+            var typeName = serviceType.Name;
 
             if (!_serviceDescriptors.ContainsKey(typeName))
             {
@@ -25,17 +32,31 @@ namespace NDependencyInjection
 
             if (descriptor.Implementation != null)
             {
-                return (T)descriptor.Implementation;
+                return descriptor.Implementation;
             }
 
-            var implementation = Activator.CreateInstance(descriptor.ImplementationType ?? descriptor.ServiceType);
+            var actualType = descriptor.ImplementationType ?? descriptor.ServiceType;
+
+            if (actualType.IsAbstract || actualType.IsInterface)
+            {
+                throw new Exception("Cannot instantiate abstract class or interface");
+            }
+
+            var parameters = actualType
+                .GetConstructors()
+                .First()
+                .GetParameters()
+                .Select(x => Resolve(x.ParameterType))
+                .ToArray();
+
+            var implementation = Activator.CreateInstance(actualType, parameters);
 
             if (descriptor.LifeTimeCycle == ELifeTimeCycle.Singleton)
             {
                 descriptor.Implementation = implementation;
             }
 
-            return (T)implementation;
+            return implementation;
         }
     }
 }

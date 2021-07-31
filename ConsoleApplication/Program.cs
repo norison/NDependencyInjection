@@ -8,7 +8,8 @@ namespace ConsoleApplication
         static void Main(string[] args)
         {
             var containerBuilder = new ContainerBuilder();
-            containerBuilder.RegisterSingleton<IRandomNumberGenerator, RandomNumberGenerator>();
+            containerBuilder.RegisterTransient<IRandomNumberGenerator, RandomNumberGenerator>();
+            containerBuilder.RegisterTransient<IGenerator, Generator>();
             var container = containerBuilder.Build();
 
             var first = container.Resolve<IRandomNumberGenerator>();

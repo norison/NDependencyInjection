@@ -7,7 +7,7 @@ namespace NDependencyInjection
         private readonly Dictionary<string, ServiceDescriptor> _serviceDescriptors = new();
 
 
-        public void RegisterSingleton<TService, TImplementation>()
+        public void RegisterSingleton<TService, TImplementation>() where TImplementation : TService
         {
             _serviceDescriptors.Add(typeof(TService).Name, new ServiceDescriptor(typeof(TService), typeof(TImplementation), ELifeTimeCycle.Singleton));
         }
@@ -22,7 +22,7 @@ namespace NDependencyInjection
             _serviceDescriptors.Add(typeof(TService).Name, new ServiceDescriptor(typeof(TService), implementation, ELifeTimeCycle.Singleton));
         }
 
-        public void RegisterTransient<TService, TImplementation>()
+        public void RegisterTransient<TService, TImplementation>() where TImplementation : TService
         {
             _serviceDescriptors.Add(typeof(TService).Name, new ServiceDescriptor(typeof(TService), typeof(TImplementation), ELifeTimeCycle.Transient));
         }
